@@ -107,8 +107,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   context,
                   MaterialPageRoute(
                     builder: (_) => WebsiteListPage(
-                      serverUrl: widget.server.baseUrl,
-                      apiKey: apiKey ?? '',
+                      client: client,
                     ),
                   ),
                 );
@@ -118,7 +117,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     arguments: widget.server);
               if (labels[i] == 'Terminal')
                 Navigator.pushNamed(context, '/terminal',
-                    arguments: widget.server);
+                    arguments: [widget.server, client]);
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

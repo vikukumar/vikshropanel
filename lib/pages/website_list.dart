@@ -1,14 +1,12 @@
 import 'package:flutter/material.dart';
-import '../api/website_api.dart';
+import 'package:vikshro_panel/services/api_client.dart';
 import '../models/website.dart';
 
 class WebsiteListPage extends StatefulWidget {
-  final String serverUrl;
-  final String apiKey;
+  final ApiClient? client;
 
   const WebsiteListPage({
-    required this.serverUrl,
-    required this.apiKey,
+    required this.client,
   });
 
   @override
@@ -16,20 +14,20 @@ class WebsiteListPage extends StatefulWidget {
 }
 
 class _WebsiteListPageState extends State<WebsiteListPage> {
-  late WebsiteAPI api;
+  late ApiClient? api;
   List<WebsiteModel> websites = [];
   bool loading = true;
 
   @override
   void initState() {
     super.initState();
-    api = WebsiteAPI(baseUrl: widget.serverUrl, apiKey: widget.apiKey);
+    api = widget.client;
     loadList();
   }
 
   Future<void> loadList() async {
-    final list = await api.getWebsiteList();
-    websites = list.map((e) => WebsiteModel.fromJson(e)).toList();
+    final list = await api?.getWebsiteLists();
+    websites = list?["data"].map((e) => WebsiteModel.fromJson(e)).toList();
     setState(() => loading = false);
   }
 

@@ -6,6 +6,7 @@ import 'package:http/http.dart' as http;
 class ApiClient {
   final String baseUrl;
   final String apiKey;
+  String? cookies;
 
   ApiClient({required this.baseUrl, required this.apiKey});
 
@@ -35,6 +36,7 @@ class ApiClient {
     final resp = await http
         .post(uri, body: _signed(params ?? {}))
         .timeout(const Duration(seconds: 20));
+    cookies = resp.headers['cookies'];
     return jsonDecode(resp.body) as Map<String, dynamic>;
   }
 
@@ -46,4 +48,11 @@ class ApiClient {
       postAction('/files?action=GetFileBody', {'path': path});
   Future<Map<String, dynamic>> saveFileBody(String path, String data) =>
       postAction('/files?action=SaveFileBody', {'path': path, 'data': data});
+
+  Future<Map<String, dynamic>> getWebsiteLists() => postAction(
+      '/v2/data?action=getData&table=sites&limit=10000',
+      {'table': 'sites', 'limit': 100});
+
+  Future<Map<String, dynamic>> getPanelConfig() =>
+      postAction('/v2/panel/public/get_public_config_simple');
 }

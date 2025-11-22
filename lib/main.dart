@@ -48,7 +48,8 @@ class MyApp extends StatelessWidget {
           if (settings.name == '/terminal') {
             final server = settings.arguments as dynamic;
             return MaterialPageRoute(
-                builder: (_) => WebSshTerminalPage(server: server));
+                builder: (_) =>
+                    WebSshTerminalPage(server: server[0], client: server[1]));
           }
           return null;
         },

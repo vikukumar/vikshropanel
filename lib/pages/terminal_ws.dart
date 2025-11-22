@@ -1,14 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:vikshro_panel/services/api_client.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:crypto/crypto.dart';
 import '../models/server.dart';
-import '../services/server_store.dart';
-import 'package:provider/provider.dart';
+//import '../services/server_store.dart';
+//import 'package:provider/provider.dart';
 
 class WebSshTerminalPage extends StatefulWidget {
   final Server server;
-  const WebSshTerminalPage({required this.server});
+  final ApiClient? client;
+  const WebSshTerminalPage({required this.server, required this.client});
 
   @override
   State<WebSshTerminalPage> createState() => _WebSshTerminalPageState();
@@ -16,6 +18,7 @@ class WebSshTerminalPage extends StatefulWidget {
 
 class _WebSshTerminalPageState extends State<WebSshTerminalPage> {
   WebSocketChannel? channel;
+  ApiClient? client;
   final List<String> lines = [];
   final ScrollController scroll = ScrollController();
   final TextEditingController input = TextEditingController();
@@ -25,21 +28,24 @@ class _WebSshTerminalPageState extends State<WebSshTerminalPage> {
   @override
   void initState() {
     super.initState();
+    client = widget.client;
     _connect();
   }
 
   String md5hex(String s) => md5.convert(utf8.encode(s)).toString();
 
   Future<void> _connect() async {
-    final store = Provider.of<ServerStore>(context, listen: false);
-    final apiKey = await store.getApiKey(widget.server.id) ?? '';
-    final time = (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString();
-    final token = md5hex(time + md5hex(apiKey));
+    //final store = Provider.of<ServerStore>(context, listen: false);
+    //final apiKey = await store.getApiKey(widget.server.id) ?? '';
+    //final time = (DateTime.now().millisecondsSinceEpoch ~/ 1000).toString();
+    //final token = md5hex(time + md5hex(apiKey));
+    final info = await client?.getPanelConfig();
+    debugPrint(info.toString());
     var ws = widget.server.baseUrl
         .replaceFirst('https://', 'wss://')
         .replaceFirst('http://', 'ws://');
     if (ws.endsWith('/')) ws = ws.substring(0, ws.length - 1);
-    ws = '$ws/v2/webssh?request_time=$time&request_token=$token';
+    ws = '$ws/v2/webssh';
     setState(() {
       connecting = true;
       status = 'Connecting...';
